@@ -1,0 +1,21 @@
+[DEFAULT]
+user=<user_ocid>
+fingerprint=<fingerprint>
+tenancy=<tenancy_ocid>
+region=<region> # example us-ashburn-1
+key_file=<oci_api_key.pem>
+
+
+[PROFILE1]
+user=<user_ocid>
+fingerprint=<fingerprint>
+tenancy=<tenancy_ocid>
+region=<region> # example us-ashburn-1
+key_file=<oci_api_key.pem>
+
+[PROFILE2]
+user=<user_ocid>
+fingerprint=<fingerprint>
+tenancy=<tenancy_ocid>
+region=<region> # example eu-frankfurt-1
+key_file=<oci_api_key.pem>
