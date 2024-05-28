@@ -37,19 +37,26 @@ def check_work_request_status(wr_client, work_request_id):
     return work_request_response.data.status
 
 def read_data_from_tenancies(config_file_path, profile):
-    oci_config = oci.config.from_file(config_file_path, profile_name=profile)
-    data_safe_client = DataSafeClient(oci_config)
+    try:
+        oci_config = oci.config.from_file(config_file_path, profile_name=profile)
+        data_safe_client = DataSafeClient(oci_config)
+        tenancy_name = oci_config.get('tenancy')
+        tenancy_obj = Tenancy(tenancy_id=tenancy_name)
+    except (oci.exceptions.ConfigFileNotFound, oci.exceptions.InvalidConfig, configparser.Error) as e:
+        print(f"Error reading OCI config file for profile {profile}: {e}")
+        return
 
-    tenancy_name = oci_config.get('tenancy')
-    tenancy_obj = Tenancy(tenancy_id=tenancy_name)
-
-    list_security_assessments_response = data_safe_client.list_security_assessments(
-        compartment_id=tenancy_name,
-        type="LATEST",
-        lifecycle_state="SUCCEEDED",
-        compartment_id_in_subtree=True,
-        access_level="ACCESSIBLE"
-    )
+    try:
+        list_security_assessments_response = data_safe_client.list_security_assessments(
+            compartment_id=tenancy_name,
+            type="LATEST",
+            lifecycle_state="SUCCEEDED",
+            compartment_id_in_subtree=True,
+            access_level="ACCESSIBLE"
+        )
+    except oci.exceptions.ServiceError as e:
+        print(f"Error listing security assessments: {e}")
+        return
 
     work_requests = []
 
@@ -58,10 +65,14 @@ def read_data_from_tenancies(config_file_path, profile):
         target_obj = Target(target_id)
         tenancy_obj.add_target(target_obj)
 
-        generate_security_assessment_report_response = data_safe_client.generate_security_assessment_report(
-            security_assessment_id=instance.id,
-            generate_security_assessment_report_details=oci.data_safe.models.GenerateSecurityAssessmentReportDetails(format="PDF")
-        )
+        try:
+            generate_security_assessment_report_response = data_safe_client.generate_security_assessment_report(
+                 security_assessment_id=instance.id,
+                 generate_security_assessment_report_details=oci.data_safe.models.GenerateSecurityAssessmentReportDetails(format="PDF")
+            )   
+        except oci.exceptions.ServiceError as e:
+            print(f"Error generating security assessment report for {instance.id}: {e}")
+            continue
 
         opc_work_request_id = generate_security_assessment_report_response.headers.get('opc-work-request-id')
         print(f"OPC Work Request ID: {opc_work_request_id}")
@@ -87,16 +98,20 @@ def read_data_from_tenancies(config_file_path, profile):
             time.sleep(30)
 
     for instance_id, _ in work_requests:
-        download_security_assessment_report_response = data_safe_client.download_security_assessment_report(
-            security_assessment_id=instance_id,
-            download_security_assessment_report_details=oci.data_safe.models.DownloadSecurityAssessmentReportDetails(format="PDF")
-        )
-        
+        try:
+            download_security_assessment_report_response = data_safe_client.download_security_assessment_report(
+                 security_assessment_id=instance_id,
+                 download_security_assessment_report_details=oci.data_safe.models.DownloadSecurityAssessmentReportDetails(format="PDF")
+            )
+        except oci.exceptions.ServiceError as e:
+            print(f"Error downloading security assessment report for {instance_id}: {e}")
+            continue
+
         report_content = download_security_assessment_report_response.data.content
         report_filename = f"{profile}_{instance_id}_security_assessment_report.pdf"
         with open(report_filename, 'wb') as file:
             file.write(report_content)
-        print(f"Security assessment report for {profile} downloaded successfully as {report_filename}.")
+        print(f"Security assessment report for {profile} downloaded successfully as {report_filename}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Read OCI Profile Names from Configuration File")
@@ -125,7 +140,7 @@ if __name__ == "__main__":
         if oci_profiles:
             print("OCI Profile Names:", oci_profiles)
         else:
-            print("No OCI Profile Names found.")
+            print("No OCI config with Profile Names found.")
 
     for profile in oci_profiles:
         read_data_from_tenancies(args.config_file_path, profile)
