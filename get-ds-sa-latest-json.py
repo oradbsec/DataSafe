@@ -1,3 +1,5 @@
+# Demonstrates the use of the Data Safe Python APIs to get all Security Assessments for all targets in all OCI regions in JSON format.
+
 import sys
 import configparser
 import os
