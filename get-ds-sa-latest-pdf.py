@@ -1,3 +1,5 @@
+# Demonstrates the use of the Data Safe Python APIs to get all Security Assessments report PDFs for all database targets in all OCI regions.
+
 import sys
 import configparser
 import os
