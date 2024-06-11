@@ -9,6 +9,33 @@ Oracle Data Safe delivers essential security services for Oracle Autonomous Data
 All Oracle Database customers can reduce the risk of a data breach and simplify compliance by using Data Safe to assess security and user risk, monitor and audit user activity, discover, classify, mask sensitive data, and manage SQL Firewall for Oracle Database 23ai.
 
 
+# Prerequisites
+
+Python samples assume you have configured `oci cli` and have a config file staged under `/home/user/.oci`
+that contains the following details:
+
+```[DEFAULT]
+user=<user_ocid>
+fingerprint=<fingerprint>
+tenancy=<tenancy ocid>
+region=<region>            #e.g. us-ashburn-1
+key_file=<oci_api_key>.pem # pem file
+
+[PROFILE1]
+user=<user_ocid>
+fingerprint=<fingerprint>
+tenancy=<tenancy ocid>
+region=<region>            #e.g. us-ashburn-1
+key_file=<oci_api_key>.pem # pem file
+
+[PROFILE2]
+user=<user_ocid>
+fingerprint=<fingerprint>
+tenancy=<tenancy ocid>
+region=<region>            #e.g. us-ashburn-1
+key_file=<oci_api_key>.pem # pem file
+```
+
 # Documentation
 You can find the online documentation of the Oracle Data Safe including its APIs under https://docs.oracle.com/en/cloud/paas/data-safe/
 
@@ -18,3 +45,4 @@ Check out the following resources for more information about Oracle Data Safe:
 - Data Safe at [oracle.com](https://www.oracle.com/security/database-security/data-safe/)
 - YouTube [playlist](https://www.youtube.com/playlist?list=PLdtXkK5KBY559R24J8mo2yOTmic7Vruss)
 - [Other](https://www.oracle.com/security/database-security/) database security products
+
