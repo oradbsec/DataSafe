@@ -10,11 +10,14 @@ All Oracle Database customers can reduce the risk of a data breach and simplify 
 
 
 # Prerequisites
+Install the (OCI Python SDK) [https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/pythonsdk.htm] or just use your OCI Cloud Shell
+as the SDK for Python is pre-configured with your credentials and ready to use immediately from within (Cloud Shell) [https://docs.oracle.com/en-us/iaas/Content/API/Concepts/cloudshellintro.htm#Cloud_Shel].
 
 Python samples assume you have configured `oci cli` and have a config file staged under `/home/user/.oci`
 that contains the following details:
 
-```[DEFAULT]
+```
+[DEFAULT]
 user=<user_ocid>
 fingerprint=<fingerprint>
 tenancy=<tenancy ocid>
